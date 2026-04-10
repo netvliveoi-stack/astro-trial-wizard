@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState, type ChangeEvent, type FormEvent } from "react";
 import { motion } from "framer-motion";
 import {
   ArrowRight,
@@ -144,6 +144,7 @@ const Index = () => {
   const [phoneCode, setPhoneCode] = useState("+1");
   const [phone, setPhone] = useState("");
   const [channelsFound, setChannelsFound] = useState(0);
+  const stepTransitionLockRef = useRef(false);
 
   const fullPhone = `${phoneCode}${phone.replace(/\s+/g, "")}`;
   const phoneValid = /^\+[1-9]\d{7,14}$/.test(fullPhone);
@@ -168,43 +169,75 @@ const Index = () => {
     return LINKS.installationGuide;
   }, [contactMethod, fullPhone, selectedCountry, selectedDevice]);
 
-  const schemaGraph = {
-    "@context": "https://schema.org",
-    "@graph": [
-      {
-        "@type": "SoftwareApplication",
-        name: "LUX FREE IPTV Free Trial Wizard",
-        applicationCategory: "EntertainmentApplication",
-        operatingSystem: "Android, iOS, Smart TV, FireStick, PC",
-        offers: {
-          "@type": "Offer",
-          price: "0",
-          priceCurrency: "USD",
-          description: "LUX FREE IPTV free trial for World Cup 2026 with 4K Anti-freeze Technology and Instant Delivery",
-        },
-      },
-      {
-        "@type": "SpecialOffer",
-        name: "PRIORITY ACCESS",
-        price: "2",
-        priceCurrency: "USD",
-        category: "Skip the Line",
-        description: "Priority pass for faster activation and Instant Delivery",
-      },
-      {
-        "@type": "FAQPage",
-        mainEntity: [
-          {
-            "@type": "Question",
-            name: faqQuestion,
-            acceptedAnswer: {
-              "@type": "Answer",
-              text: "Use the LUX FREE IPTV Free Trial Wizard: select region, device, messaging app, and phone number to unlock your World Cup 2026 trial with Instant Delivery.",
-            },
+  const schemaGraph = useMemo(
+    () => ({
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "SoftwareApplication",
+          name: "LUX FREE IPTV Free Trial Wizard",
+          applicationCategory: "EntertainmentApplication",
+          operatingSystem: "Android, iOS, Smart TV, FireStick, PC",
+          offers: {
+            "@type": "Offer",
+            price: "0",
+            priceCurrency: "USD",
+            description: "LUX FREE IPTV free trial for World Cup 2026 with 4K Anti-freeze Technology and Instant Delivery",
           },
-        ],
-      },
-    ],
+        },
+        {
+          "@type": "SpecialOffer",
+          name: "PRIORITY ACCESS",
+          price: "2",
+          priceCurrency: "USD",
+          category: "Skip the Line",
+          description: "Priority pass for faster activation and Instant Delivery",
+        },
+        {
+          "@type": "FAQPage",
+          mainEntity: [
+            {
+              "@type": "Question",
+              name: faqQuestion,
+              acceptedAnswer: {
+                "@type": "Answer",
+                text: "Use the LUX FREE IPTV Free Trial Wizard: select region, device, messaging app, and phone number to unlock your World Cup 2026 trial with Instant Delivery.",
+              },
+            },
+          ],
+        },
+      ],
+    }),
+    [],
+  );
+
+  const schemaJson = useMemo(() => JSON.stringify(schemaGraph), [schemaGraph]);
+
+  const goToStep = (targetStep: Step) => {
+    if (stepTransitionLockRef.current) return;
+    stepTransitionLockRef.current = true;
+
+    setStep((currentStep) => {
+      const distance = Math.abs(targetStep - currentStep);
+      return distance <= 1 ? targetStep : currentStep;
+    });
+
+    window.setTimeout(() => {
+      stepTransitionLockRef.current = false;
+    }, 180);
+  };
+
+  const handlePhoneCodeChange = (event: ChangeEvent<HTMLSelectElement>) => {
+    setPhoneCode(event.target.value);
+  };
+
+  const handlePhoneChange = (event: ChangeEvent<HTMLInputElement>) => {
+    setPhone(event.target.value);
+  };
+
+  const handleMessagingSubmit = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (phoneValid) goToStep(4);
   };
 
   return (
@@ -252,7 +285,7 @@ const Index = () => {
                       <div className="flex flex-wrap gap-2">
                         {group.countries.map((country) => (
                           <button
-                            key={country}
+                            key={`${group.continent}-${country}`}
                             type="button"
                             onClick={() => setSelectedCountry(country)}
                             className={`rounded-md border px-2.5 py-1 text-xs transition ${
@@ -274,7 +307,7 @@ const Index = () => {
 
               <div className="flex gap-3">
                 <Button variant="outline" className="w-full" disabled>← Back</Button>
-                <Button variant="wizard" className="w-full" onClick={() => setStep(2)}>Continue to Device <ArrowRight className="h-4 w-4" /></Button>
+                <Button variant="wizard" className="w-full" onClick={() => goToStep(2)}>Continue to Device <ArrowRight className="h-4 w-4" /></Button>
               </div>
             </motion.div>
           )}
@@ -289,7 +322,7 @@ const Index = () => {
                     <div className="grid gap-2 sm:grid-cols-2">
                       {devices.map((device) => (
                         <button
-                          key={device}
+                          key={`${title}-${device}`}
                           type="button"
                           onClick={() => setSelectedDevice(device)}
                           className={`rounded-lg border p-3 text-left text-sm transition ${
@@ -307,8 +340,8 @@ const Index = () => {
                 ))}
               </div>
               <div className="flex gap-3">
-                <Button variant="outline" className="w-full" onClick={() => setStep(1)}>← Back</Button>
-                <Button variant="wizard" className="w-full" onClick={() => setStep(3)}>Continue <ArrowRight className="h-4 w-4" /></Button>
+                <Button variant="outline" className="w-full" onClick={() => goToStep(1)}>← Back</Button>
+                <Button variant="wizard" className="w-full" onClick={() => goToStep(3)}>Continue <ArrowRight className="h-4 w-4" /></Button>
               </div>
             </motion.div>
           )}
@@ -318,10 +351,7 @@ const Index = () => {
               initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
               className="space-y-5"
-              onSubmit={(e) => {
-                e.preventDefault();
-                if (phoneValid) setStep(4);
-              }}
+              onSubmit={handleMessagingSubmit}
             >
               <h3 className="text-lg font-medium">Which messaging apps do you use?</h3>
               <p className="text-sm text-primary">SELECT MESSAGING APPS</p>
@@ -350,7 +380,7 @@ const Index = () => {
                     aria-label="Country code"
                     className="h-10 rounded-md border border-input bg-background px-3 text-sm"
                     value={phoneCode}
-                    onChange={(e) => setPhoneCode(e.target.value)}
+                    onChange={handlePhoneCodeChange}
                   >
                     {countryCodes.map((item) => (
                       <option key={item.value} value={item.value}>{item.label}</option>
@@ -361,15 +391,15 @@ const Index = () => {
                     type="tel"
                     placeholder="6768789897"
                     value={phone}
-                    onChange={(e) => setPhone(e.target.value)}
+                    onChange={handlePhoneChange}
                     aria-label="International phone number"
                   />
                 </div>
                 {!phoneValid && phone.length > 0 && <p className="text-sm text-destructive">Please enter a valid number format.</p>}
               </div>
 
-              <div className="flex gap-3">
-                <Button type="button" variant="outline" className="w-full" onClick={() => setStep(2)}>← Back</Button>
+              <div className="flex flex-col gap-3 sm:flex-row">
+                <Button type="button" variant="outline" className="w-full" onClick={() => goToStep(2)}>← Back</Button>
                 <Button type="submit" variant="wizard" className="w-full" disabled={!phoneValid}>Continue <ArrowRight className="h-4 w-4" /></Button>
               </div>
             </motion.form>
@@ -384,8 +414,8 @@ const Index = () => {
               <p className="text-muted-foreground">Generating your <span className="font-medium text-primary">USA</span> trial</p>
               <p className="text-sm text-muted-foreground">📶 Scanning available channels...</p>
               <div className="flex gap-3">
-                <Button variant="outline" className="w-full" onClick={() => setStep(3)}>← Back</Button>
-                <Button variant="wizard" className="w-full" onClick={() => setStep(5)}>Continue <ArrowRight className="h-4 w-4" /></Button>
+                <Button variant="outline" className="w-full" onClick={() => goToStep(3)}>← Back</Button>
+                <Button variant="wizard" className="w-full" onClick={() => goToStep(5)}>Continue <ArrowRight className="h-4 w-4" /></Button>
               </div>
             </motion.div>
           )}
@@ -393,7 +423,7 @@ const Index = () => {
           {step === 5 && (
             <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className="space-y-5">
               <h3 className="text-xl font-semibold">Choose your access</h3>
-              <div className="grid gap-4 lg:grid-cols-2">
+              <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
                 <section className="rounded-xl border border-border bg-muted/30 p-5" aria-label="Standard queue">
                   <p className="text-sm text-muted-foreground">FREE</p>
                   <h4 className="text-2xl font-semibold">Standard Queue</h4>
@@ -432,8 +462,8 @@ const Index = () => {
                 <a href={LINKS.checkout} target="_blank" rel="noreferrer" className="text-primary hover:underline">Checkout</a>
               </div>
 
-              <div className="flex gap-3">
-                <Button variant="outline" className="w-full" onClick={() => setStep(4)}>← Back</Button>
+              <div className="flex flex-col gap-3 sm:flex-row">
+                <Button variant="outline" className="w-full" onClick={() => goToStep(4)}>← Back</Button>
                 <a href={LINKS.checkout} target="_blank" rel="noreferrer" className="w-full">
                   <Button variant="wizard" className="w-full">Continue to Checkout <ArrowRight className="h-4 w-4" /></Button>
                 </a>
@@ -451,7 +481,7 @@ const Index = () => {
         </section>
       </section>
 
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schemaGraph) }} />
+      <script id="lux-free-iptv-schema" type="application/ld+json" dangerouslySetInnerHTML={{ __html: schemaJson }} />
     </main>
   );
 };
