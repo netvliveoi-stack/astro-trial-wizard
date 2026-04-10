@@ -4,15 +4,20 @@ import {
   ArrowRight,
   BadgeCheck,
   CheckCircle2,
+  Flame,
   Globe,
+  Laptop,
   LoaderCircle,
   Mail,
   MessageCircle,
-  Shield,
+  Monitor,
   Smartphone,
+  Shield,
   Star,
+  Tablet,
   Tv,
   Users,
+  Zap,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -21,6 +26,7 @@ type Step = 1 | 2 | 3 | 4 | 5;
 
 type RegionGroup = {
   continent: string;
+  count: number;
   countries: string[];
 };
 
@@ -30,20 +36,25 @@ const LINKS = {
   privacyTerms: "https://placeholder.example/privacy-terms",
 };
 
+const WHATSAPP_NUMBER = "33644650533";
+
 const faqQuestion = "How to get a free IPTV trial for World Cup 2026?";
 
+const stepLabels = ["Region", "Device", "Scan", "Contact", "Access"] as const;
+
 const sportsCategories = [
-  "US Major Leagues",
-  "World Football",
-  "International & Commonwealth",
-  "Pro Tour & Individual",
-  "Motorsport",
+  "US Major Leagues\nAmerican Football, Basketball",
+  "World Football\nSoccer",
+  "International & Commonwealth\nCricket, Rugby",
+  "Pro Tour & Individual\nTennis, Golf",
+  "Motorsport\nFormula 1, NAS",
 ];
 
 const regions: RegionGroup[] = [
-  { continent: "Americas", countries: ["🇨🇦 Canada", "🇺🇸 USA", "🇲🇽 Mexico", "🇧🇷 Brazil", "🇻🇪 Venezuela", "🇸🇷 Suriname"] },
+  { continent: "Americas", count: 6, countries: ["🇨🇦 Canada", "🇺🇸 USA", "🇲🇽 Mexico", "🇧🇷 Brazil", "🇻🇪 Venezuela", "🇸🇷 Suriname"] },
   {
     continent: "Europe",
+    count: 34,
     countries: [
       "🇬🇧 UK",
       "🇮🇪 Ireland",
@@ -83,6 +94,7 @@ const regions: RegionGroup[] = [
   },
   {
     continent: "Asia",
+    count: 21,
     countries: [
       "🇮🇱 Israel",
       "🇹🇷 Turkey",
@@ -107,17 +119,49 @@ const regions: RegionGroup[] = [
       "🇵🇭 Philippines",
     ],
   },
-  { continent: "Africa", countries: ["🇨🇲 Cameroon", "🇲🇦 Morocco", "🇪🇬 Egypt", "🇹🇳 Tunisia", "🇩🇿 Algeria", "🇱🇾 Libya", "🇸🇩 Sudan"] },
-  { continent: "Oceania", countries: ["🇦🇺 Australia", "🇳🇿 New Zealand", "🇲🇹 Malta", "🇱🇨 Saint Lucia"] },
-  { continent: "Middle East", countries: ["🇱🇧 Lebanon", "🇸🇾 Syria", "🇮🇶 Iraq", "🇸🇦 Saudi Arabia", "🇰🇼 Kuwait", "🇶🇦 Qatar", "🇴🇲 Oman", "🇧🇭 Bahrain", "🇯🇴 Jordan", "🇵🇸 Palestine", "🇾🇪 Yemen", "🇦🇪 Emirates"] },
+  { continent: "Africa", count: 7, countries: ["🇨🇲 Cameroon", "🇲🇦 Morocco", "🇪🇬 Egypt", "🇹🇳 Tunisia", "🇩🇿 Algeria", "🇱🇾 Libya", "🇸🇩 Sudan"] },
+  { continent: "Oceania", count: 4, countries: ["🇦🇺 Australia", "🇳🇿 New Zealand", "🇲🇹 Malta", "🇱🇨 Saint Lucia"] },
+  { continent: "Middle East", count: 12, countries: ["🇱🇧 Lebanon", "🇸🇾 Syria", "🇮🇶 Iraq", "🇸🇦 Saudi Arabia", "🇰🇼 Kuwait", "🇶🇦 Qatar", "🇴🇲 Oman", "🇧🇭 Bahrain", "🇯🇴 Jordan", "🇵🇸 Palestine", "🇾🇪 Yemen", "🇦🇪 Emirates"] },
 ];
 
 const deviceGroups = [
-  { title: "Smartphones", devices: ["Android", "iPhone", "Huawei"], icon: Smartphone },
-  { title: "Tablets", devices: ["iPad", "Android Tablet"], icon: Smartphone },
-  { title: "Computers", devices: ["PC", "Laptop", "MacBook"], icon: Globe },
-  { title: "TV & Streaming", devices: ["Smart TV", "FireStick", "Android Box", "MAG Box"], icon: Tv },
-];
+  {
+    title: "Smartphones",
+    devices: [
+      { label: "Android", icon: Smartphone },
+      { label: "iPhone", icon: Smartphone },
+      { label: "Huawei", icon: Flame },
+    ],
+    icon: Smartphone,
+  },
+  {
+    title: "Tablets",
+    devices: [
+      { label: "iPad", icon: Tablet },
+      { label: "Android Tablet", icon: Tablet },
+    ],
+    icon: Tablet,
+  },
+  {
+    title: "Computers",
+    devices: [
+      { label: "PC", icon: Monitor },
+      { label: "Laptop", icon: Laptop },
+      { label: "MacBook", icon: Laptop },
+    ],
+    icon: Globe,
+  },
+  {
+    title: "TV & Streaming",
+    devices: [
+      { label: "Smart TV", icon: Tv },
+      { label: "FireStick", icon: Flame },
+      { label: "Android Box", icon: Tv },
+      { label: "MAG Box", icon: Zap },
+    ],
+    icon: Tv,
+  },
+] as const;
 
 const contactApps = [
   { id: "whatsapp", label: "WhatsApp", icon: MessageCircle },
@@ -160,14 +204,15 @@ const Index = () => {
     return () => window.clearInterval(timer);
   }, [step]);
 
-  const priorityLink = useMemo(() => {
-    const message = encodeURIComponent(
-      `LUX FREE IPTV Priority Access ($2): ${selectedCountry}, ${selectedDevice}, ${fullPhone}. World Cup 2026 with Instant Delivery.`,
-    );
-    if (contactMethod === "whatsapp") return `https://wa.me/?text=${message}`;
-    if (contactMethod === "telegram") return `https://t.me/share/url?url=${encodeURIComponent(LINKS.checkout)}&text=${message}`;
-    return LINKS.installationGuide;
-  }, [contactMethod, fullPhone, selectedCountry, selectedDevice]);
+  const claimMessage = useMemo(
+    () =>
+      encodeURIComponent(
+        `Hello LUX FREE IPTV, I want to claim my free trial. Country: ${selectedCountry}, Device: ${selectedDevice}, App: ${contactMethod}, Phone: ${fullPhone}`,
+      ),
+    [contactMethod, fullPhone, selectedCountry, selectedDevice],
+  );
+
+  const whatsappClaimLink = useMemo(() => `https://wa.me/${WHATSAPP_NUMBER}?text=${claimMessage}`, [claimMessage]);
 
   const schemaGraph = useMemo(
     () => ({
@@ -178,6 +223,7 @@ const Index = () => {
           name: "LUX FREE IPTV Free Trial Wizard",
           applicationCategory: "EntertainmentApplication",
           operatingSystem: "Android, iOS, Smart TV, FireStick, PC",
+          brand: { "@type": "Brand", name: "LUX FREE IPTV" },
           offers: {
             "@type": "Offer",
             price: "0",
@@ -248,31 +294,64 @@ const Index = () => {
         <header className="glass-panel hero-nebula rounded-2xl p-6 md:p-10" aria-label="Hero section">
           <p className="text-sm font-semibold uppercase tracking-[0.18em] text-primary">LUX FREE IPTV</p>
           <h1 className="mt-4 text-3xl font-semibold tracking-tight md:text-5xl">FREE TRIAL — World Cup 2026 Ready</h1>
-          <p className="mt-3 max-w-3xl text-muted-foreground">
-            4K Anti-freeze Technology + Instant Delivery for World Cup 2026 streaming.
-          </p>
+          <p className="mt-3 max-w-3xl text-muted-foreground">4K Anti-freeze Technology + Instant Delivery for World Cup 2026 streaming.</p>
           <div className="mt-4 flex flex-wrap gap-3 text-sm text-muted-foreground">
-            <span className="inline-flex items-center gap-2 rounded-full border border-border px-3 py-1"><Star className="h-4 w-4 text-primary" /> Trustpilot 4.9/5</span>
-            <span className="inline-flex items-center gap-2 rounded-full border border-border px-3 py-1"><BadgeCheck className="h-4 w-4 text-success" /> 30 Days Money-Back Guarantee</span>
+            <span className="inline-flex items-center gap-2 rounded-full border border-border px-3 py-1">
+              <Star className="h-4 w-4 text-primary" /> Trustpilot 4.9/5
+            </span>
+            <span className="inline-flex items-center gap-2 rounded-full border border-border px-3 py-1">
+              <BadgeCheck className="h-4 w-4 text-success" /> 30 Days Money-Back Guarantee
+            </span>
           </div>
         </header>
 
         <article className="glass-panel rounded-2xl p-5 md:p-7" aria-label="Five step trial wizard">
-          <div className="mb-6 flex items-center justify-between">
-            <h2 className="text-xl font-semibold">Step {step} of 5</h2>
-            <span className="rounded-full border border-border px-3 py-1 text-xs text-muted-foreground">Premium Access</span>
+          <div className="mb-5 rounded-xl border border-border bg-background/30 p-3">
+            <div className="grid grid-cols-6 gap-2 text-center text-xs md:text-sm">
+              {stepLabels.map((label, index) => {
+                const currentIndex = index + 1;
+                const isDone = step > currentIndex;
+                const isActive = step === currentIndex;
+                return (
+                  <div key={label} className="space-y-1">
+                    <p className="text-muted-foreground">{label}</p>
+                    <div className="flex justify-center">
+                      <span
+                        className={`inline-flex h-6 w-6 items-center justify-center rounded-full border text-xs ${
+                          isActive ? "border-primary bg-primary/25 text-primary glow-accent" : isDone ? "border-success bg-success/20 text-success" : "border-border bg-background/30 text-muted-foreground"
+                        }`}
+                      >
+                        {isDone ? "✓" : isActive ? "●" : "○"}
+                      </span>
+                    </div>
+                  </div>
+                );
+              })}
+              <div className="space-y-1">
+                <p className="text-muted-foreground">Details</p>
+                <div className="flex justify-center">
+                  <span className="inline-flex h-6 w-6 items-center justify-center rounded-full border border-border bg-background/30 text-xs text-muted-foreground">○</span>
+                </div>
+              </div>
+            </div>
           </div>
 
           {step === 1 && (
             <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className="space-y-5">
-              <h3 className="text-lg font-medium">Select your streaming regions</h3>
+              <h2 className="text-lg font-medium">Select your streaming regions</h2>
 
               <section aria-label="Sports Categories" className="space-y-3">
                 <p className="text-sm font-semibold text-primary">🏆 SPORTS CATEGORIES</p>
                 <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-5">
-                  {sportsCategories.map((item) => (
-                    <div key={item} className="rounded-xl border border-border bg-surface-glass/50 p-3 text-sm">{item}</div>
-                  ))}
+                  {sportsCategories.map((item) => {
+                    const [title, subtitle] = item.split("\n");
+                    return (
+                      <button key={item} type="button" className="rounded-xl border border-border bg-surface-glass/60 p-3 text-left transition hover:border-primary/70 hover:glow-accent">
+                        <p className="text-sm font-medium">{title}</p>
+                        <p className="mt-1 text-xs text-muted-foreground">{subtitle}</p>
+                      </button>
+                    );
+                  })}
                 </div>
               </section>
 
@@ -281,7 +360,9 @@ const Index = () => {
                 <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
                   {regions.map((group) => (
                     <div key={group.continent} className="rounded-xl border border-border bg-surface-glass/50 p-3">
-                      <p className="mb-2 text-sm font-medium text-primary">📍 {group.continent}</p>
+                      <p className="mb-2 text-sm font-medium text-primary">
+                        📍 {group.continent} <span className="ml-1 rounded-full border border-border px-1.5 py-0.5 text-[10px] text-muted-foreground">{group.count}</span>
+                      </p>
                       <div className="flex flex-wrap gap-2">
                         {group.countries.map((country) => (
                           <button
@@ -290,7 +371,7 @@ const Index = () => {
                             onClick={() => setSelectedCountry(country)}
                             className={`rounded-md border px-2.5 py-1 text-xs transition ${
                               selectedCountry === country
-                                ? "border-primary bg-primary/20 text-foreground"
+                                ? "border-primary bg-primary/20 text-foreground glow-accent"
                                 : "border-border bg-background/40 text-muted-foreground hover:border-primary/60"
                             }`}
                             aria-label={`Select country ${country}`}
@@ -306,54 +387,64 @@ const Index = () => {
               </section>
 
               <div className="flex gap-3">
-                <Button variant="outline" className="w-full" disabled>← Back</Button>
-                <Button variant="wizard" className="w-full" onClick={() => goToStep(2)}>Continue to Device <ArrowRight className="h-4 w-4" /></Button>
+                <Button variant="outline" className="w-full" disabled>
+                  ← Back
+                </Button>
+                <Button variant="wizard" className="w-full" onClick={() => goToStep(2)}>
+                  Continue <ArrowRight className="h-4 w-4" />
+                </Button>
               </div>
             </motion.div>
           )}
 
           {step === 2 && (
             <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className="space-y-5">
-              <h3 className="text-lg font-medium">What will you watch on?</h3>
+              <h2 className="text-lg font-medium">What will you watch on?</h2>
               <div className="grid gap-4 lg:grid-cols-2">
                 {deviceGroups.map(({ title, devices, icon: Icon }) => (
                   <section key={title} className="rounded-xl border border-border bg-surface-glass/50 p-4" aria-label={title}>
-                    <p className="mb-3 flex items-center gap-2 text-sm font-semibold text-primary"><Icon className="h-4 w-4" /> {title.toUpperCase()}</p>
+                    <p className="mb-3 flex items-center gap-2 text-sm font-semibold text-primary">
+                      <Icon className="h-4 w-4" /> {title.toUpperCase()}
+                    </p>
                     <div className="grid gap-2 sm:grid-cols-2">
-                      {devices.map((device) => (
-                        <button
-                          key={`${title}-${device}`}
-                          type="button"
-                          onClick={() => setSelectedDevice(device)}
-                          className={`rounded-lg border p-3 text-left text-sm transition ${
-                            selectedDevice === device
-                              ? "border-primary bg-primary/15 glow-accent"
-                              : "border-border bg-background/30 hover:border-primary/60"
-                          }`}
-                          aria-label={`Select device ${device}`}
-                        >
-                          {device}
-                        </button>
-                      ))}
+                      {devices.map((device) => {
+                        const DeviceIcon = device.icon;
+                        return (
+                          <button
+                            key={`${title}-${device.label}`}
+                            type="button"
+                            onClick={() => setSelectedDevice(device.label)}
+                            className={`rounded-lg border p-3 text-left text-sm transition ${
+                              selectedDevice === device.label
+                                ? "border-primary bg-primary/15 glow-accent"
+                                : "border-border bg-background/30 hover:border-primary/60"
+                            }`}
+                            aria-label={`Select device ${device.label}`}
+                          >
+                            <span className="inline-flex items-center gap-2">
+                              <DeviceIcon className="h-4 w-4 text-primary" /> {device.label}
+                            </span>
+                          </button>
+                        );
+                      })}
                     </div>
                   </section>
                 ))}
               </div>
               <div className="flex gap-3">
-                <Button variant="outline" className="w-full" onClick={() => goToStep(1)}>← Back</Button>
-                <Button variant="wizard" className="w-full" onClick={() => goToStep(3)}>Continue <ArrowRight className="h-4 w-4" /></Button>
+                <Button variant="outline" className="w-full" onClick={() => goToStep(1)}>
+                  ← Back
+                </Button>
+                <Button variant="wizard" className="w-full" onClick={() => goToStep(3)}>
+                  Continue <ArrowRight className="h-4 w-4" />
+                </Button>
               </div>
             </motion.div>
           )}
 
           {step === 3 && (
-            <motion.form
-              initial={{ opacity: 0, y: 12 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="space-y-5"
-              onSubmit={handleMessagingSubmit}
-            >
-              <h3 className="text-lg font-medium">Which messaging apps do you use?</h3>
+            <motion.form initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className="space-y-5" onSubmit={handleMessagingSubmit}>
+              <h2 className="text-lg font-medium">Which messaging apps do you use?</h2>
               <p className="text-sm text-primary">SELECT MESSAGING APPS</p>
 
               <div className="grid gap-3 sm:grid-cols-3">
@@ -363,7 +454,7 @@ const Index = () => {
                     type="button"
                     onClick={() => setContactMethod(id)}
                     className={`rounded-xl border p-4 text-left transition ${
-                      contactMethod === id ? "border-primary bg-primary/15 glow-accent" : "border-border bg-surface-glass/50"
+                      contactMethod === id ? "border-primary bg-primary/15 glow-accent" : "border-border bg-surface-glass/50 hover:border-primary/60"
                     }`}
                     aria-label={`Select ${label}`}
                   >
@@ -374,7 +465,9 @@ const Index = () => {
               </div>
 
               <div className="space-y-2">
-                <label className="block text-sm text-muted-foreground" htmlFor="phone-input">Enter your phone number to receive trial details</label>
+                <label className="block text-sm text-muted-foreground" htmlFor="phone-input">
+                  Enter your phone number to receive trial details
+                </label>
                 <div className="flex gap-2">
                   <select
                     aria-label="Country code"
@@ -383,7 +476,9 @@ const Index = () => {
                     onChange={handlePhoneCodeChange}
                   >
                     {countryCodes.map((item) => (
-                      <option key={item.value} value={item.value}>{item.label}</option>
+                      <option key={item.value} value={item.value}>
+                        {item.label}
+                      </option>
                     ))}
                   </select>
                   <Input
@@ -399,40 +494,58 @@ const Index = () => {
               </div>
 
               <div className="flex flex-col gap-3 sm:flex-row">
-                <Button type="button" variant="outline" className="w-full" onClick={() => goToStep(2)}>← Back</Button>
-                <Button type="submit" variant="wizard" className="w-full" disabled={!phoneValid}>Continue <ArrowRight className="h-4 w-4" /></Button>
+                <Button type="button" variant="outline" className="w-full" onClick={() => goToStep(2)}>
+                  ← Back
+                </Button>
+                <Button type="submit" variant="wizard" className="w-full" disabled={!phoneValid}>
+                  Continue <ArrowRight className="h-4 w-4" />
+                </Button>
               </div>
             </motion.form>
           )}
 
           {step === 4 && (
             <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className="space-y-5 text-center">
-              <h3 className="text-xl font-semibold">Preparing your trial...</h3>
+              <h2 className="text-2xl font-semibold">Preparing your trial...</h2>
               <LoaderCircle className="mx-auto h-11 w-11 animate-spin text-primary" />
-              <p className="text-5xl font-semibold text-primary" aria-live="polite">{channelsFound}</p>
-              <p className="text-lg font-medium">CHANNELS FOUND</p>
-              <p className="text-muted-foreground">Generating your <span className="font-medium text-primary">USA</span> trial</p>
+              <p className="text-6xl font-semibold text-primary" aria-live="polite">
+                {channelsFound}
+              </p>
+              <p className="text-xl font-medium">CHANNELS FOUND</p>
+              <p className="text-muted-foreground">
+                Generating your <span className="font-medium text-primary">USA</span> trial
+              </p>
               <p className="text-sm text-muted-foreground">📶 Scanning available channels...</p>
               <div className="flex gap-3">
-                <Button variant="outline" className="w-full" onClick={() => goToStep(3)}>← Back</Button>
-                <Button variant="wizard" className="w-full" onClick={() => goToStep(5)}>Continue <ArrowRight className="h-4 w-4" /></Button>
+                <Button variant="outline" className="w-full" onClick={() => goToStep(3)}>
+                  ← Back
+                </Button>
+                <Button variant="wizard" className="w-full" onClick={() => goToStep(5)}>
+                  Continue <ArrowRight className="h-4 w-4" />
+                </Button>
               </div>
             </motion.div>
           )}
 
           {step === 5 && (
             <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className="space-y-5">
-              <h3 className="text-xl font-semibold">Choose your access</h3>
+              <h2 className="text-xl font-semibold">Choose your access</h2>
+              <p className="text-center text-sm font-semibold text-primary">✦ CHOOSE YOUR PATH ✦</p>
+
               <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
                 <section className="rounded-xl border border-border bg-muted/30 p-5" aria-label="Standard queue">
                   <p className="text-sm text-muted-foreground">FREE</p>
-                  <h4 className="text-2xl font-semibold">Standard Queue</h4>
+                  <h3 className="text-2xl font-semibold">Standard Queue</h3>
                   <p className="mt-1 text-lg">$0</p>
                   <ul className="mt-4 space-y-2 text-sm text-muted-foreground">
                     <li>👥 #84 in queue</li>
                     <li>⏱ Standard Queue -8.0 hrs wait</li>
                   </ul>
-                  <Button variant="outline" className="mt-4 w-full">Continue Free — I Can Wait →</Button>
+                  <a href={whatsappClaimLink} target="_blank" rel="noreferrer" className="block">
+                    <Button variant="outline" className="mt-4 w-full">
+                      Continue Free — I Can Wait →
+                    </Button>
+                  </a>
                 </section>
 
                 <section className="rounded-xl border border-primary bg-primary/10 p-5 glow-accent" aria-label="Priority access">
@@ -440,32 +553,52 @@ const Index = () => {
                     <p className="text-sm font-semibold text-primary">⚡ PRIORITY ACCESS</p>
                     <span className="rounded-full border border-primary px-2 py-1 text-xs text-primary">👑 MOST POPULAR</span>
                   </div>
-                  <h4 className="text-2xl font-semibold">Skip the Line</h4>
+                  <h3 className="text-2xl font-semibold">Skip the Line</h3>
                   <p className="mt-1 text-4xl font-bold text-primary">$2</p>
                   <div className="mt-4 rounded-lg border border-border bg-background/30 p-3 text-sm">
                     <p className="font-medium">⏰ 24-HOUR PASS</p>
                     <p className="text-muted-foreground">Only 5 people ahead of you • ⏱ 30 min delivery</p>
                   </div>
-                  <a href={priorityLink} target="_blank" rel="noreferrer" aria-label="Get priority access" className="block">
-                    <Button variant="priority" className="mt-4 w-full">⚡ Get Priority Access — $2 →</Button>
+                  <a href={whatsappClaimLink} target="_blank" rel="noreferrer" aria-label="Get priority access" className="block">
+                    <Button variant="priority" className="mt-4 w-full">
+                      ⚡ Get Priority Access — $2 →
+                    </Button>
                   </a>
                 </section>
               </div>
 
               <div className="rounded-xl border border-border bg-surface-glass/50 p-4 text-sm text-muted-foreground">
-                <p className="flex flex-wrap items-center gap-3"><Shield className="h-4 w-4 text-success" /> Secure Payment <CheckCircle2 className="h-4 w-4 text-primary" /> Instant Setup <BadgeCheck className="h-4 w-4 text-success" /> 30 Days Money-Back Guarantee</p>
+                <p className="flex flex-wrap items-center gap-3">
+                  <Shield className="h-4 w-4 text-success" /> Secure Payment <CheckCircle2 className="h-4 w-4 text-primary" /> Instant Setup <BadgeCheck className="h-4 w-4 text-success" /> 30 Days Money-Back Guarantee
+                </p>
               </div>
 
+              <a href={whatsappClaimLink} target="_blank" rel="noreferrer" className="block">
+                <Button variant="wizard" className="w-full">
+                  Claim Free Trial on WhatsApp (+33 6 44 65 05 33)
+                </Button>
+              </a>
+
               <div className="flex flex-wrap gap-4 text-sm">
-                <a href={LINKS.installationGuide} target="_blank" rel="noreferrer" className="text-primary hover:underline">Installation Guide</a>
-                <a href={LINKS.privacyTerms} target="_blank" rel="noreferrer" className="text-muted-foreground hover:text-foreground hover:underline">Privacy & Terms</a>
-                <a href={LINKS.checkout} target="_blank" rel="noreferrer" className="text-primary hover:underline">Checkout</a>
+                <a href={LINKS.installationGuide} target="_blank" rel="noreferrer" className="text-primary hover:underline">
+                  Installation Guide
+                </a>
+                <a href={LINKS.privacyTerms} target="_blank" rel="noreferrer" className="text-muted-foreground hover:text-foreground hover:underline">
+                  Privacy & Terms
+                </a>
+                <a href={LINKS.checkout} target="_blank" rel="noreferrer" className="text-primary hover:underline">
+                  Checkout
+                </a>
               </div>
 
               <div className="flex flex-col gap-3 sm:flex-row">
-                <Button variant="outline" className="w-full" onClick={() => goToStep(4)}>← Back</Button>
-                <a href={LINKS.checkout} target="_blank" rel="noreferrer" className="w-full">
-                  <Button variant="wizard" className="w-full">Continue to Checkout <ArrowRight className="h-4 w-4" /></Button>
+                <Button variant="outline" className="w-full" onClick={() => goToStep(4)}>
+                  ← Back
+                </Button>
+                <a href={whatsappClaimLink} target="_blank" rel="noreferrer" className="w-full">
+                  <Button variant="wizard" className="w-full">
+                    Continue to WhatsApp <ArrowRight className="h-4 w-4" />
+                  </Button>
                 </a>
               </div>
             </motion.div>
