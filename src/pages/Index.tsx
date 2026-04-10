@@ -44,6 +44,12 @@ const devices = [
 
 const faqQuestion = "How to get a free IPTV trial for World Cup 2026?";
 
+const LINKS = {
+  checkout: "https://placeholder.example/checkout",
+  installationGuide: "https://placeholder.example/installation-guide",
+  privacyTerms: "https://placeholder.example/privacy-terms",
+};
+
 const Index = () => {
   const [step, setStep] = useState<Step>(1);
   const [selectedCountry, setSelectedCountry] = useState("United States");
@@ -67,9 +73,11 @@ const Index = () => {
 
   const priorityLink = useMemo(() => {
     const msg = encodeURIComponent(
-      `Priority Access request ($2): ${selectedCountry}, ${selectedDevice}, ${phone}. Need instant free trial with 4K Anti-freeze Technology and Instant Email Delivery.`,
+      `Priority Access request ($2): ${selectedCountry}, ${selectedDevice}, ${phone}. Need instant free trial for World Cup 2026 with 4K Anti-freeze Technology and Instant Delivery.`,
     );
-    return contactMethod === "whatsapp" ? `https://wa.me/?text=${msg}` : `https://t.me/share/url?url=https://inlineiptv.example&text=${msg}`;
+    return contactMethod === "whatsapp"
+      ? `https://wa.me/?text=${msg}`
+      : `https://t.me/share/url?url=${encodeURIComponent(LINKS.checkout)}&text=${msg}`;
   }, [contactMethod, phone, selectedCountry, selectedDevice]);
 
   const schemaGraph = {
@@ -77,14 +85,14 @@ const Index = () => {
     "@graph": [
       {
         "@type": "SoftwareApplication",
-        name: "Inline IPTV Free Trial Wizard",
+        name: "LUX FREE IPTV Free Trial Wizard",
         applicationCategory: "EntertainmentApplication",
         operatingSystem: "Android, iOS, Smart TV, FireStick, PC",
         offers: {
           "@type": "Offer",
           price: "0",
           priceCurrency: "USD",
-          description: "Free IPTV trial with 4K Anti-freeze Technology and Instant Email Delivery",
+          description: "Free IPTV trial for World Cup 2026 with 4K Anti-freeze Technology and Instant Delivery",
         },
       },
       {
@@ -103,7 +111,7 @@ const Index = () => {
             name: faqQuestion,
             acceptedAnswer: {
               "@type": "Answer",
-              text: "Use the Inline IPTV Free Trial Wizard: pick your region and device, submit a valid international WhatsApp or Telegram number, then choose standard or priority activation to receive your World Cup 2026-ready trial instantly.",
+              text: "Use the LUX FREE IPTV Free Trial Wizard: pick your region and device, submit a valid international WhatsApp or Telegram number, then choose standard or priority activation to receive your World Cup 2026-ready trial with Instant Delivery.",
             },
           },
         ],
@@ -112,11 +120,12 @@ const Index = () => {
   };
 
   return (
-    <main className="relative min-h-screen overflow-hidden px-4 py-8 md:px-8" aria-label="Inline IPTV Free Trial Wizard">
+    <main className="relative min-h-screen overflow-hidden px-4 py-8 md:px-8" aria-label="LUX FREE IPTV Free Trial Wizard">
       <div className="pointer-events-none absolute inset-0 star-grid" />
 
       <section className="mx-auto max-w-6xl space-y-6">
         <header className="glass-panel hero-nebula rounded-2xl p-6 md:p-10" aria-label="Hero section">
+          <p className="text-sm font-semibold uppercase tracking-[0.18em] text-primary">LUX FREE IPTV</p>
           <div className="flex flex-wrap items-center gap-3 text-sm text-muted-foreground" title="Trust and speed features">
             <span className="inline-flex items-center gap-2 rounded-full border border-border px-3 py-1">
               <Star className="h-4 w-4 text-primary" /> Trustpilot 4.9/5
@@ -126,10 +135,20 @@ const Index = () => {
             </span>
           </div>
           <h1 className="mt-5 text-3xl font-semibold tracking-tight md:text-5xl">
-            Inline IPTV Free Trial Wizard — World Cup 2026 Ready
+            LUX FREE IPTV Free Trial Wizard — World Cup 2026 Ready
           </h1>
           <p className="mt-4 max-w-3xl text-muted-foreground">
-            Activate in minutes with 4K Anti-freeze Technology and Instant Email Delivery.
+            Activate in minutes for World Cup 2026 with 4K Anti-freeze Technology and{" "}
+            <a
+              href={LINKS.installationGuide}
+              target="_blank"
+              rel="noreferrer"
+              className="font-medium text-primary underline-offset-4 hover:underline"
+              aria-label="Read the instant delivery installation guide"
+            >
+              Instant Delivery
+            </a>
+            .
           </p>
         </header>
 
@@ -289,16 +308,19 @@ const Index = () => {
                 <div className="rounded-xl border border-primary bg-primary/10 p-4 glow-accent">
                   <p className="text-sm text-primary">Priority Access</p>
                   <p className="text-xl font-semibold">$2 — Skip the Line</p>
+                  <a href={LINKS.checkout} target="_blank" rel="noreferrer" aria-label="Go to checkout placeholder link">
+                    <Button variant="priority" className="mt-3 w-full">Checkout Priority Access</Button>
+                  </a>
                 </div>
               </div>
             </section>
 
             <section className="glass-panel rounded-2xl p-5" title="Trust signals">
-              <h2 className="text-lg font-semibold">Why Users Trust Inline IPTV</h2>
+              <h2 className="text-lg font-semibold">Why Users Trust LUX FREE IPTV</h2>
               <ul className="mt-4 space-y-3 text-sm text-muted-foreground">
                 <li className="flex items-center gap-2"><Shield className="h-4 w-4 text-success" /> 30 Days Money-Back Guarantee</li>
                 <li className="flex items-center gap-2"><Star className="h-4 w-4 text-primary" /> Trustpilot-rated onboarding support</li>
-                <li className="flex items-center gap-2"><Mail className="h-4 w-4 text-accent" /> Instant Email Delivery after activation</li>
+                <li className="flex items-center gap-2"><Mail className="h-4 w-4 text-accent" /> World Cup 2026 Instant Delivery after activation</li>
               </ul>
             </section>
 
@@ -306,8 +328,20 @@ const Index = () => {
               <h2 className="text-lg font-semibold">FAQ</h2>
               <p className="mt-3 font-medium">{faqQuestion}</p>
               <p className="mt-2 text-sm text-muted-foreground">
-                Select region + device, add a valid WhatsApp/Telegram number, then choose standard or priority route to unlock an optimized trial for World Cup 2026 streaming.
+                Select region + device, add a valid WhatsApp/Telegram number, then choose standard or priority route to unlock a World Cup 2026 streaming trial with Instant Delivery.
               </p>
+            </section>
+
+            <section className="glass-panel rounded-2xl p-5" aria-label="Legal and setup links">
+              <h2 className="text-lg font-semibold">Setup & Legal</h2>
+              <div className="mt-3 flex flex-wrap gap-3 text-sm">
+                <a href={LINKS.installationGuide} target="_blank" rel="noreferrer" className="text-primary underline-offset-4 hover:underline">
+                  Installation Guide
+                </a>
+                <a href={LINKS.privacyTerms} target="_blank" rel="noreferrer" className="text-muted-foreground underline-offset-4 hover:text-foreground hover:underline">
+                  Privacy & Terms
+                </a>
+              </div>
             </section>
           </aside>
         </section>
