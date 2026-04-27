@@ -30,6 +30,12 @@ type RegionGroup = {
   countries: string[];
 };
 
+const getCountryMeta = (country: string) => {
+  const [flag = "🌍", ...nameParts] = country.trim().split(" ");
+  const name = nameParts.join(" ") || country;
+  return { flag, name };
+};
+
 const LINKS = {
   checkout: "https://placeholder.example/checkout",
   installationGuide: "https://placeholder.example/installation-guide",
@@ -364,22 +370,36 @@ const Index = () => {
                         📍 {group.continent} <span className="ml-1 rounded-full border border-border px-1.5 py-0.5 text-[10px] text-muted-foreground">{group.count}</span>
                       </p>
                       <div className="flex flex-wrap gap-2">
-                        {group.countries.map((country) => (
-                          <button
-                            key={`${group.continent}-${country}`}
-                            type="button"
-                            onClick={() => setSelectedCountry(country)}
-                            className={`rounded-md border px-2.5 py-1 text-xs transition ${
-                              selectedCountry === country
-                                ? "border-primary bg-primary/20 text-foreground glow-accent"
-                                : "border-border bg-background/40 text-muted-foreground hover:border-primary/60"
-                            }`}
-                            aria-label={`Select country ${country}`}
-                            title={country}
-                          >
-                            {country}
-                          </button>
-                        ))}
+                        {group.countries.map((country) => {
+                          const { flag, name } = getCountryMeta(country);
+                          const isSelected = selectedCountry === country;
+
+                          return (
+                            <button
+                              key={`${group.continent}-${country}`}
+                              type="button"
+                              onClick={() => setSelectedCountry(country)}
+                              className={`rounded-md border px-2.5 py-1 text-xs transition ${
+                                isSelected
+                                  ? "border-primary bg-primary/20 text-foreground glow-accent"
+                                  : "border-border bg-background/40 text-muted-foreground hover:border-primary/60"
+                              }`}
+                              aria-label={`Select country ${name}`}
+                              aria-pressed={isSelected}
+                              title={country}
+                            >
+                              <span className="inline-flex items-center gap-1.5">
+                                <span
+                                  className="inline-flex h-5 w-5 items-center justify-center rounded-full border border-border bg-background/70 text-[11px]"
+                                  aria-hidden="true"
+                                >
+                                  {flag}
+                                </span>
+                                <span className="truncate">{name}</span>
+                              </span>
+                            </button>
+                          );
+                        })}
                       </div>
                     </div>
                   ))}
