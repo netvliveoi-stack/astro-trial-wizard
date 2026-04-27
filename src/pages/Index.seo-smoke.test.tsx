@@ -33,11 +33,11 @@ const expectFaqToMatchSelection = (country: string, device: string) => {
 
 describe("Index SEO smoke test", () => {
   beforeEach(() => {
-    vi.spyOn(window, "setInterval").mockReturnValue(0 as unknown as number);
+    vi.spyOn(window, "setInterval").mockReturnValue(0 as unknown as ReturnType<typeof window.setInterval>);
     vi.spyOn(window, "clearInterval").mockImplementation(() => undefined);
     vi.spyOn(window, "setTimeout").mockImplementation(((handler: TimerHandler) => {
       if (typeof handler === "function") handler();
-      return 0 as unknown as number;
+      return 0 as unknown as ReturnType<typeof window.setTimeout>;
     }) as typeof window.setTimeout);
   });
 
