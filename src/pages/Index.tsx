@@ -220,50 +220,50 @@ const Index = () => {
 
   const whatsappClaimLink = useMemo(() => `https://wa.me/${WHATSAPP_NUMBER}?text=${claimMessage}`, [claimMessage]);
 
-  const schemaGraph = useMemo(
-    () => ({
-      "@context": "https://schema.org",
-      "@graph": [
-        {
-          "@type": "SoftwareApplication",
-          name: "LUX FREE IPTV Free Trial Wizard",
-          applicationCategory: "EntertainmentApplication",
-          operatingSystem: "Android, iOS, Smart TV, FireStick, PC",
-          brand: { "@type": "Brand", name: "LUX FREE IPTV" },
-          offers: {
-            "@type": "Offer",
-            price: "0",
-            priceCurrency: "USD",
-            description: "LUX FREE IPTV free trial for World Cup 2026 with 4K Anti-freeze Technology and Instant Delivery",
-          },
-        },
-        {
-          "@type": "SpecialOffer",
-          name: "PRIORITY ACCESS",
-          price: "2",
-          priceCurrency: "USD",
-          category: "Skip the Line",
-          description: "Priority pass for faster activation and Instant Delivery",
-        },
-        {
-          "@type": "FAQPage",
-          mainEntity: [
-            {
-              "@type": "Question",
-              name: faqQuestion,
-              acceptedAnswer: {
-                "@type": "Answer",
-                text: "Use the LUX FREE IPTV Free Trial Wizard: select region, device, messaging app, and phone number to unlock your World Cup 2026 trial with Instant Delivery.",
-              },
+  const schemaJson = useMemo(
+    () =>
+      JSON.stringify({
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "SoftwareApplication",
+            name: "LUX FREE IPTV Free Trial Wizard",
+            applicationCategory: "EntertainmentApplication",
+            applicationSubCategory: `Free trial for ${selectedCountry} on ${selectedDevice}`,
+            operatingSystem: "Android, iOS, Smart TV, FireStick, PC",
+            brand: { "@type": "Brand", name: "LUX FREE IPTV" },
+            offers: {
+              "@type": "Offer",
+              price: "0",
+              priceCurrency: "USD",
+              description: "LUX FREE IPTV free trial for World Cup 2026 with 4K Anti-freeze Technology and Instant Delivery",
             },
-          ],
-        },
-      ],
-    }),
-    [],
+          },
+          {
+            "@type": "SpecialOffer",
+            name: "PRIORITY ACCESS",
+            price: "2",
+            priceCurrency: "USD",
+            category: "Skip the Line",
+            description: "Priority pass for faster activation and Instant Delivery",
+          },
+          {
+            "@type": "FAQPage",
+            mainEntity: [
+              {
+                "@type": "Question",
+                name: faqQuestion,
+                acceptedAnswer: {
+                  "@type": "Answer",
+                  text: "Use the LUX FREE IPTV Free Trial Wizard: select region, device, messaging app, and phone number to unlock your World Cup 2026 trial with Instant Delivery.",
+                },
+              },
+            ],
+          },
+        ],
+      }),
+    [selectedCountry, selectedDevice],
   );
-
-  const schemaJson = useMemo(() => JSON.stringify(schemaGraph), [schemaGraph]);
 
   const goToStep = (targetStep: Step) => {
     if (stepTransitionLockRef.current) return;
