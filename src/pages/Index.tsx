@@ -255,7 +255,23 @@ const Index = () => {
                 name: faqQuestion,
                 acceptedAnswer: {
                   "@type": "Answer",
-                  text: "Use the LUX FREE IPTV Free Trial Wizard: select region, device, messaging app, and phone number to unlock your World Cup 2026 trial with Instant Delivery.",
+                  text: `Use the LUX FREE IPTV Free Trial Wizard: select ${selectedCountry}, choose ${selectedDevice}, add your messaging app and phone number, then unlock your World Cup 2026 trial with Instant Delivery.`,
+                },
+              },
+              {
+                "@type": "Question",
+                name: `Is ${selectedDevice} supported for ${selectedCountry} free trial activation?`,
+                acceptedAnswer: {
+                  "@type": "Answer",
+                  text: `Yes. ${selectedDevice} is supported for ${selectedCountry} activation in the LUX FREE IPTV trial flow with standard queue and priority access options.`,
+                },
+              },
+              {
+                "@type": "Question",
+                name: "How long does activation take after submitting details?",
+                acceptedAnswer: {
+                  "@type": "Answer",
+                  text: "Standard Queue is around 8.0 hours wait, while PRIORITY ACCESS ($2) is typically around 30 minutes with faster delivery.",
                 },
               },
             ],
