@@ -64,6 +64,7 @@ describe("Index SEO smoke test", () => {
 
     await waitFor(() => expect(screen.getByText(/preparing your trial/i)).toBeInTheDocument());
     expectFaqToMatchSelection(region, device);
+    await waitForStepTransitionLock();
 
     fireEvent.click(screen.getByRole("button", { name: /^continue/i }));
     await waitFor(() => expect(screen.getByText(/choose your access/i)).toBeInTheDocument());
