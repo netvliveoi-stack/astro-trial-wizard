@@ -1,5 +1,4 @@
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
-import { afterEach, beforeEach, vi } from "vitest";
 import Index from "./Index";
 
 type SchemaNode = {
@@ -31,20 +30,11 @@ const expectFaqToMatchSelection = (country: string, device: string) => {
   expect(allTexts).toContain(device);
 };
 
+const waitForStepTransitionLock = async () => {
+  await new Promise((resolve) => setTimeout(resolve, 220));
+};
+
 describe("Index SEO smoke test", () => {
-  beforeEach(() => {
-    vi.spyOn(window, "setInterval").mockReturnValue(0 as unknown as ReturnType<typeof window.setInterval>);
-    vi.spyOn(window, "clearInterval").mockImplementation(() => undefined);
-    vi.spyOn(window, "setTimeout").mockImplementation(((handler: TimerHandler) => {
-      if (typeof handler === "function") handler();
-      return 0 as unknown as ReturnType<typeof window.setTimeout>;
-    }) as typeof window.setTimeout);
-  });
-
-  afterEach(() => {
-    vi.restoreAllMocks();
-  });
-
   it("keeps one JSON-LD script and updates FAQ content for region/device across step changes", async () => {
     render(<Index />);
 
@@ -59,6 +49,7 @@ describe("Index SEO smoke test", () => {
     fireEvent.click(screen.getByRole("button", { name: /^continue/i }));
     await waitFor(() => expect(screen.getByText(/what will you watch on\?/i)).toBeInTheDocument());
     expectFaqToMatchSelection(region, "Android");
+    await waitForStepTransitionLock();
 
     fireEvent.click(screen.getByRole("button", { name: /select device firestick/i }));
     expectFaqToMatchSelection(region, device);
@@ -66,12 +57,14 @@ describe("Index SEO smoke test", () => {
     fireEvent.click(screen.getByRole("button", { name: /^continue/i }));
     await waitFor(() => expect(screen.getByText(/which messaging apps do you use\?/i)).toBeInTheDocument());
     expectFaqToMatchSelection(region, device);
+    await waitForStepTransitionLock();
 
     fireEvent.change(screen.getByLabelText(/international phone number/i), { target: { value: "6768789897" } });
     fireEvent.click(screen.getByRole("button", { name: /^continue/i }));
 
     await waitFor(() => expect(screen.getByText(/preparing your trial/i)).toBeInTheDocument());
     expectFaqToMatchSelection(region, device);
+    await waitForStepTransitionLock();
 
     fireEvent.click(screen.getByRole("button", { name: /^continue/i }));
     await waitFor(() => expect(screen.getByText(/choose your access/i)).toBeInTheDocument());
