@@ -34,7 +34,41 @@ const waitForStepTransitionLock = async () => {
   await new Promise((resolve) => setTimeout(resolve, 220));
 };
 
+const setViewport = (width: number) => {
+  Object.defineProperty(window, "innerWidth", {
+    configurable: true,
+    writable: true,
+    value: width,
+  });
+  window.dispatchEvent(new Event("resize"));
+};
+
 describe("Index SEO smoke test", () => {
+  it("keeps country flag emoji and country name horizontally aligned with consistent gap on all screen sizes", () => {
+    render(<Index />);
+
+    const widths = [375, 768, 1280];
+
+    widths.forEach((width) => {
+      setViewport(width);
+
+      const countryButtons = screen.getAllByRole("button", { name: /select country /i });
+      expect(countryButtons.length).toBeGreaterThan(0);
+
+      countryButtons.forEach((button) => {
+        const row = button.querySelector("span.inline-flex.items-center.gap-1\.5");
+        expect(row).toBeTruthy();
+
+        const [flag, countryName] = Array.from(row?.children ?? []);
+
+        expect(flag).toBeTruthy();
+        expect(flag).toHaveClass("leading-none");
+        expect(countryName).toBeTruthy();
+        expect(countryName).toHaveClass("truncate");
+      });
+    });
+  });
+
   it("keeps one JSON-LD script and updates FAQ content for region/device across step changes", async () => {
     render(<Index />);
 
