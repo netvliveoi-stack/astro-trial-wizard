@@ -56,8 +56,9 @@ describe("Index SEO smoke test", () => {
       expect(countryButtons.length).toBeGreaterThan(0);
 
       countryButtons.forEach((button) => {
-        const row = button.querySelector("span.inline-flex.items-center.gap-1\.5");
+        const row = button.firstElementChild;
         expect(row).toBeTruthy();
+        expect(row).toHaveClass("inline-flex", "items-center", "gap-1.5");
 
         const [flag, countryName] = Array.from(row?.children ?? []);
 
